@@ -59,6 +59,11 @@ func TestEvaluator_Evaluate(t *testing.T) {
 			wantOut: "3",
 			wantErr: false,
 		},
+		{
+			name:    "Invalid",
+			input:   `w`,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
