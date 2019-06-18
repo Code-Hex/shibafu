@@ -27,6 +27,9 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) NextToken() *token.Token {
+	if l.ch == 0 {
+		return l.newToken(token.EOF)
+	}
 	l.skipComments()
 	return l.readIdents()
 }

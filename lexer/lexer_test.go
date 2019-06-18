@@ -90,6 +90,24 @@ wwWww WWwWW WWwWW`,
 				{token.CLOSE, token.CLOSE, 17, 3},
 			},
 		},
+		{
+			name:  "Illegal",
+			input: `wwwwwwwwwWWWWWWwWwwWwWwWWwWwwWWwwWWWWw`,
+			wants: []want{
+				{token.INCR, token.INCR, 3, 1},
+				{token.INCR, token.INCR, 6, 1},
+				{token.INCR, token.INCR, 9, 1},
+				{token.DECR, token.DECR, 12, 1},
+				{token.DECR, token.DECR, 15, 1},
+				{token.NEXT, token.NEXT, 18, 1},
+				{token.NEXT, token.NEXT, 21, 1},
+				{token.PREV, token.PREV, 24, 1},
+				{token.PREV, token.PREV, 27, 1},
+				{token.READ, token.READ, 31, 1},
+				{token.READ, token.READ, 35, 1},
+				{token.ILLEGAL, token.ILLEGAL, 39, 1},
+			},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
