@@ -3,6 +3,7 @@ package evaluator
 import (
 	"bufio"
 	"errors"
+	"io"
 	"os"
 
 	"github.com/Code-Hex/shibafu/lexer"
@@ -22,8 +23,12 @@ const (
 	stackSize = 65535
 )
 
+var (
+	stdout io.Writer = os.Stdout
+)
+
 type Evaluator struct {
-	lexer   *lexer.Lexer
+	lexer   lexer.Lexer
 	reader  *bufio.Reader
 	program []*instruction
 }
@@ -124,7 +129,7 @@ func (e *Evaluator) execute() error {
 		case DECRVAL:
 			data[ptr]--
 		case WRITE:
-			os.Stdout.Write([]byte{data[ptr]})
+			stdout.Write([]byte{data[ptr]})
 		case READ:
 			rv, _ := e.reader.ReadByte()
 			data[ptr] = rv
