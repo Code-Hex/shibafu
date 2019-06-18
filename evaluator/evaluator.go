@@ -9,7 +9,18 @@ import (
 	"github.com/Code-Hex/shibafu/token"
 )
 
-const stackSize = 65535
+const (
+	INCR = iota
+	DECR
+	INCRVAL
+	DECRVAL
+	WRITE
+	READ
+	JMP
+	BCK
+
+	stackSize = 65535
+)
 
 type Evaluator struct {
 	lexer   *lexer.Lexer
@@ -21,17 +32,6 @@ type instruction struct {
 	operator int
 	pc       int
 }
-
-const (
-	INCR = iota
-	DECR
-	INCRVAL
-	DECRVAL
-	WRITE
-	READ
-	JMP
-	BCK
-)
 
 func New(input string) *Evaluator {
 	return &Evaluator{
