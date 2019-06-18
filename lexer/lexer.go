@@ -7,7 +7,11 @@ import (
 )
 
 // Lexer is used for tokenizing programs
-type Lexer struct {
+type Lexer interface {
+	NextToken() *token.Token
+}
+
+type lexer struct {
 	input        []rune
 	position     int
 	readPosition int
@@ -17,8 +21,8 @@ type Lexer struct {
 }
 
 // New initializes a new lexer with input string
-func New(input string) *Lexer {
-	l := &Lexer{
+func New(input string) Lexer {
+	l := &lexer{
 		input: []rune(input),
 		line:  1,
 	}
@@ -26,15 +30,15 @@ func New(input string) *Lexer {
 	return l
 }
 
-func (l *Lexer) NextToken() *token.Token {
+func (l *lexer) NextToken() *token.Token {
+	l.skipComments()
 	if l.ch == 0 {
 		return l.newToken(token.EOF)
 	}
-	l.skipComments()
 	return l.readIdents()
 }
 
-func (l *Lexer) readChar() {
+func (l *lexer) readChar() {
 	if l.readPosition >= len(l.input) {
 		// ascii code's null (EOF)
 		l.ch = 0
@@ -46,8 +50,8 @@ func (l *Lexer) readChar() {
 	l.col++
 }
 
-func (l *Lexer) skipComments() {
-	for l.ch != 'w' && l.ch != 'W' {
+func (l *lexer) skipComments() {
+	for l.ch != 'w' && l.ch != 'W' && l.ch != 0 {
 		if l.ch == '\n' {
 			l.col = 0
 			l.line++
@@ -56,7 +60,7 @@ func (l *Lexer) skipComments() {
 	}
 }
 
-func (l *Lexer) readIdents() *token.Token {
+func (l *lexer) readIdents() *token.Token {
 	position := l.position
 	defer l.readChar()
 
@@ -100,7 +104,7 @@ func (l *Lexer) readIdents() *token.Token {
 	return l.newToken(token.ILLEGAL)
 }
 
-func (l *Lexer) newToken(typ token.Type) *token.Token {
+func (l *lexer) newToken(typ token.Type) *token.Token {
 	return &token.Token{
 		Type:    typ,
 		Literal: string(typ),
