@@ -6,19 +6,21 @@ type Type string
 type Token struct {
 	Type    Type
 	Literal string
+	Col     int
 	Line    int
 }
 
 // Literals
 const (
-	EOF = "EOF"
+	EOF     = "EOF"
+	ILLEGAL = "ILLEGAL"
 
-	INCR  = "wWw"
-	DECR  = "WWw"
-	NEXT  = "www"
-	PREV  = "WwWw"
-	READ  = "wWWW"
-	WRITE = "wWwWw"
+	INCR  = "www"
+	DECR  = "WWW"
+	NEXT  = "wWw"
+	PREV  = "WwW"
+	READ  = "wwWW"
+	WRITE = "WWww"
 	OPEN  = "wwWww"
-	CLOSE = "WWwWWW"
+	CLOSE = "WWwWW"
 )
