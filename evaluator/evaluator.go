@@ -11,21 +11,19 @@ import (
 )
 
 const (
-	INCR = iota
-	DECR
-	INCRVAL
-	DECRVAL
-	WRITE
-	READ
-	JMP
-	BCK
+	incr = iota
+	decr
+	incrval
+	decrval
+	write
+	read
+	fwd
+	bck
 
 	stackSize = 65535
 )
 
-var (
-	stdout io.Writer = os.Stdout
-)
+var stdout io.Writer = os.Stdout
 
 type Evaluator struct {
 	lexer   lexer.Lexer
@@ -62,37 +60,37 @@ LOOP:
 			break LOOP
 		case token.INCR:
 			e.program = append(e.program, &instruction{
-				operator: INCR,
+				operator: incr,
 				pc:       pc,
 			})
 		case token.DECR:
 			e.program = append(e.program, &instruction{
-				operator: DECR,
+				operator: decr,
 				pc:       pc,
 			})
 		case token.NEXT:
 			e.program = append(e.program, &instruction{
-				operator: INCRVAL,
+				operator: incrval,
 				pc:       pc,
 			})
 		case token.PREV:
 			e.program = append(e.program, &instruction{
-				operator: DECRVAL,
+				operator: decrval,
 				pc:       pc,
 			})
 		case token.READ:
 			e.program = append(e.program, &instruction{
-				operator: READ,
+				operator: read,
 				pc:       pc,
 			})
 		case token.WRITE:
 			e.program = append(e.program, &instruction{
-				operator: WRITE,
+				operator: write,
 				pc:       pc,
 			})
 		case token.OPEN:
 			e.program = append(e.program, &instruction{
-				operator: JMP,
+				operator: fwd,
 				pc:       pc,
 			})
 			jmpStack = append(jmpStack, pc)
@@ -103,7 +101,7 @@ LOOP:
 			jmpLabel := jmpStack[len(jmpStack)-1]
 			jmpStack = jmpStack[:len(jmpStack)-1]
 			e.program = append(e.program, &instruction{
-				operator: BCK,
+				operator: bck,
 				pc:       jmpLabel,
 			})
 			e.program[jmpLabel].pc = pc
@@ -120,24 +118,24 @@ func (e *Evaluator) execute() error {
 	for pc := 0; pc < len(e.program); pc++ {
 		inst := e.program[pc]
 		switch inst.operator {
-		case INCR:
+		case incr:
 			ptr++
-		case DECR:
+		case decr:
 			ptr--
-		case INCRVAL:
+		case incrval:
 			data[ptr]++
-		case DECRVAL:
+		case decrval:
 			data[ptr]--
-		case WRITE:
+		case write:
 			stdout.Write([]byte{data[ptr]})
-		case READ:
+		case read:
 			rv, _ := e.reader.ReadByte()
 			data[ptr] = rv
-		case JMP:
+		case fwd:
 			if data[ptr] == 0 {
 				pc = e.program[pc].pc
 			}
-		case BCK:
+		case bck:
 			if data[ptr] != 0 {
 				pc = e.program[pc].pc
 			}
