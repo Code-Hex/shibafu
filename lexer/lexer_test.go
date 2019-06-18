@@ -108,6 +108,18 @@ wwWww WWwWW WWwWW`,
 				{token.ILLEGAL, token.ILLEGAL, 39, 1},
 			},
 		},
+		{
+			name:  "EOF",
+			input: `wwwwwwwww`,
+			wants: []want{
+				{token.INCR, token.INCR, 3, 1},
+				{token.INCR, token.INCR, 6, 1},
+				{token.INCR, token.INCR, 9, 1},
+				{token.EOF, token.EOF, 10, 1},
+				{token.EOF, token.EOF, 10, 1},
+				{token.EOF, token.EOF, 10, 1},
+			},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
