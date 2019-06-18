@@ -13,16 +13,21 @@ const stackSize = 65535
 type Evaluator struct {
 	lexer   *lexer.Lexer
 	reader  *bufio.Reader
-	program []token.Type
+	program []*instruction
+}
+
+type instruction struct {
+	operator uint
+	operand  uint
 }
 
 const (
-	INC = iota
-	DEC
-	INCVAL
-	DECVAL
-	OUT
-	IN
+	INCR = iota
+	DECR
+	INCRVAL
+	DECRVAL
+	WRITE
+	READ
 	JMP
 	BCK
 )
@@ -35,28 +40,28 @@ func New(input string) *Evaluator {
 }
 
 func (e *Evaluator) Evaluate() {
-	var ptr int
-	data := make([]byte, stackSize)
+	// var ptr int
+	// data := make([]byte, stackSize)
 	for pc := 0; pc < len(e.program); pc++ {
-		switch t.Type {
-		case token.EOF:
-			break
-		case token.INCR:
-			ptr++
-		case token.DECR:
-			ptr--
-		case token.NEXT:
-			data[ptr]++
-		case token.PREV:
-			data[ptr]--
-		case token.READ:
-			rv, _ := e.reader.ReadByte()
-			data[ptr] = rv
-		case token.WRITE:
-			os.Stdout.Write([]byte{data[ptr]})
-		case token.OPEN:
+		// switch t.Type {
+		// case token.EOF:
+		// 	break
+		// case token.INCR:
+		// 	ptr++
+		// case token.DECR:
+		// 	ptr--
+		// case token.NEXT:
+		// 	data[ptr]++
+		// case token.PREV:
+		// 	data[ptr]--
+		// case token.READ:
+		// 	rv, _ := e.reader.ReadByte()
+		// 	data[ptr] = rv
+		// case token.WRITE:
+		// 	os.Stdout.Write([]byte{data[ptr]})
+		// case token.OPEN:
 
-		}
+		// }
 	}
 
 }
@@ -64,10 +69,45 @@ func (e *Evaluator) Evaluate() {
 func (e *Evaluator) compile() {
 	for {
 		t := e.lexer.NextToken()
-		e.program = append(e.program, t.Type)
+		switch t.Type {
+		case token.EOF:
+			break
+		case token.INCR:
+			e.program = append(e.program, &instruction{
+				operator: INCR,
+			})
+		case token.DECR:
+			e.program = append(e.program, &instruction{
+				operator: DECR,
+			})
+		case token.NEXT:
+			e.program = append(e.program, &instruction{
+				operator: INCRVAL,
+			})
+		case token.PREV:
+			e.program = append(e.program, &instruction{
+				operator: DECRVAL,
+			})
+		case token.READ:
+			e.program = append(e.program, &instruction{
+				operator: READ,
+			})
+		case token.WRITE:
+			e.program = append(e.program, &instruction{
+				operator: WRITE,
+			})
+		case token.OPEN:
+			e.program = append(e.program, &instruction{
+				operator: JMP,
+			})
+		case token.CLOSE:
+			e.program = append(e.program, &instruction{
+				operator: BCK,
+			})
+		}
 	}
 }
 
 func (e *Evaluator) execute() {
-	
+
 }
