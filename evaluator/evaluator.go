@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"bufio"
+	"errors"
 	"os"
 
 	"github.com/Code-Hex/shibafu/lexer"
@@ -17,8 +18,8 @@ type Evaluator struct {
 }
 
 type instruction struct {
-	operator uint
-	operand  uint
+	operator int
+	pc       int
 }
 
 const (
@@ -39,75 +40,105 @@ func New(input string) *Evaluator {
 	}
 }
 
-func (e *Evaluator) Evaluate() {
-	// var ptr int
-	// data := make([]byte, stackSize)
-	for pc := 0; pc < len(e.program); pc++ {
-		// switch t.Type {
-		// case token.EOF:
-		// 	break
-		// case token.INCR:
-		// 	ptr++
-		// case token.DECR:
-		// 	ptr--
-		// case token.NEXT:
-		// 	data[ptr]++
-		// case token.PREV:
-		// 	data[ptr]--
-		// case token.READ:
-		// 	rv, _ := e.reader.ReadByte()
-		// 	data[ptr] = rv
-		// case token.WRITE:
-		// 	os.Stdout.Write([]byte{data[ptr]})
-		// case token.OPEN:
-
-		// }
+func (e *Evaluator) Evaluate() error {
+	if err := e.compile(); err != nil {
+		return err
 	}
-
+	return e.execute()
 }
 
-func (e *Evaluator) compile() {
-	for {
+func (e *Evaluator) compile() error {
+	var jmpStack []int
+LOOP:
+	for pc := 0; ; pc++ {
 		t := e.lexer.NextToken()
 		switch t.Type {
 		case token.EOF:
-			break
+			break LOOP
 		case token.INCR:
 			e.program = append(e.program, &instruction{
 				operator: INCR,
+				pc:       pc,
 			})
 		case token.DECR:
 			e.program = append(e.program, &instruction{
 				operator: DECR,
+				pc:       pc,
 			})
 		case token.NEXT:
 			e.program = append(e.program, &instruction{
 				operator: INCRVAL,
+				pc:       pc,
 			})
 		case token.PREV:
 			e.program = append(e.program, &instruction{
 				operator: DECRVAL,
+				pc:       pc,
 			})
 		case token.READ:
 			e.program = append(e.program, &instruction{
 				operator: READ,
+				pc:       pc,
 			})
 		case token.WRITE:
 			e.program = append(e.program, &instruction{
 				operator: WRITE,
+				pc:       pc,
 			})
 		case token.OPEN:
 			e.program = append(e.program, &instruction{
 				operator: JMP,
+				pc:       pc,
 			})
+			jmpStack = append(jmpStack, pc)
 		case token.CLOSE:
+			if len(jmpStack) == 0 {
+				return errors.New("compile error")
+			}
+			jmpLabel := jmpStack[len(jmpStack)-1]
+			jmpStack = jmpStack[:len(jmpStack)-1]
 			e.program = append(e.program, &instruction{
 				operator: BCK,
+				pc:       jmpLabel,
 			})
+			e.program[jmpLabel].pc = pc
+		case token.ILLEGAL:
+			return errors.New("compile error")
 		}
 	}
+	return nil
 }
 
-func (e *Evaluator) execute() {
-
+func (e *Evaluator) execute() error {
+	var ptr int
+	data := make([]byte, stackSize)
+	for pc := 0; pc < len(e.program); pc++ {
+		inst := e.program[pc]
+		switch inst.operator {
+		case INCR:
+			ptr++
+		case DECR:
+			ptr--
+		case INCRVAL:
+			data[ptr]++
+		case DECRVAL:
+			data[ptr]--
+		case WRITE:
+			os.Stdout.Write([]byte{data[ptr]})
+		case READ:
+			rv, _ := e.reader.ReadByte()
+			data[ptr] = rv
+		case JMP:
+			if data[ptr] == 0 {
+				pc = e.program[pc].pc
+			}
+		case BCK:
+			if data[ptr] != 0 {
+				pc = e.program[pc].pc
+			}
+		default:
+			return errors.New("runtime error")
+		}
+	}
+	return nil
 }
