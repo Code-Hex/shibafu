@@ -31,10 +31,10 @@ func New(input string) Lexer {
 }
 
 func (l *lexer) NextToken() *token.Token {
+	l.skipComments()
 	if l.ch == 0 {
 		return l.newToken(token.EOF)
 	}
-	l.skipComments()
 	return l.readIdents()
 }
 
@@ -51,7 +51,7 @@ func (l *lexer) readChar() {
 }
 
 func (l *lexer) skipComments() {
-	for l.ch != 'w' && l.ch != 'W' {
+	for l.ch != 'w' && l.ch != 'W' && l.ch != 0 {
 		if l.ch == '\n' {
 			l.col = 0
 			l.line++
