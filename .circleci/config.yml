@@ -7,7 +7,6 @@ common_steps:
   restore_cache_modules: &restore_cache_modules
     keys:
       - go-mod-v1-{{ checksum "go.sum" }}
-
 jobs:
   build:
     docker:
