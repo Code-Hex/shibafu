@@ -7,34 +7,42 @@ import (
 
 const helloworld = `
 wwwwWwwWwwWwwWwwWwwWwwWwwWwwWw
-wwWwwWWWwWwwWwwWwwWwwWwwWwwWwwWwwwwWwWWWwWW
-WWWWWwwwwwwWwwWwwWwwWwwWwwWwwWw
-wwWwwWWWwWwwWwwWwwWwwwwWwWWWwWW
-WWWwWwWWwwwWwwWwwWwwWwwWwwWwwWw
-WWwwWWwwwWwwWwwWwWWwwwwWwwWwWWWwWWwww
+wWWWWWwWwwWwwWwwWwwWwwWwwWwwWwwwwWwWWWw
+WWWWwwwwwwWwwWwwWwwWwwWwwWwwWw
+wWWWWWwWwwWwwWwwWwwwwWwWWWw
+WWWwWwWwwwWwwWwwWwwWwwWwwWwwWwWwwWwwwWwwWwwWwWww
+wWWWwWWWwwwwwWwwWwwWwwWwwWwwWwwWwwWw
+wWWWWWwWwwWwwWwwWwwwwWwWWWwWWWWwwwwwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWWWWWwWwwWwwWwwWwwWwwwwWwWWWwWWWWwwwwwwWwwWwwWwwWwwWwwWwwWwwWw
+wWWWWWwWwwWwwWwwwwWwWWWwWWWWwwwWwwWwwWwWwwWwWWwWWwWWwWWwWWwW
+WwwWwWWwWWwWWwWWwWWwWWwWWwWWwwwWWWwWWWwwww
 wWwwWwwWwwWwwWwwWwwWwwWw
-wwWwwWWWwWwwWwwWwwWwwwwWwWWWwWW
-WWWWWwwwwwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
-wwWwwWWWwWwwWwwWwwWwwWwwwwWwWWWwWW
-WWWWWwwwwwwWwwWwwWwwWwwWwwWwwWwwWw
-wwWwwWWWwWwwWwwWwwwwWwWWWwWW
-WWWWWwwwWwwWwwWwWWww
-WwWWwWWwWWwWWwWWwWWWww
-WwWWwWWwWWwWWwWWwWWwWWwWWWww
-wwWwwWwWWWwWWwwwwWwwWwwWwwWwwWwwWwwWwwWw
-wwWwwWWWwWwwWwwWwwWwwwwWwWWWwWW
-WWWwWwWWwwwwWwwWwWWWwWW
-wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwWWww
+wWWWWWwWwwWwwWwwWwwwwWwWWWw
+WWWwWwWww
+wWWWwWWWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwWww
 `
 
 const add = `
 wWwwwwwWwwWwwwwWWWWWW
-wwwwwWwwWwWWWWwWwwwwWWwWWWWW
-wWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
-wWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
-wWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
-wWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
-wWwwWwwWwwWwwWwwWwwWwwWwWWww
+wwwwWWWwWWWWwWwwwwWWwWWW <- Point
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwWww
+`
+
+const mul = `
+wWwwWwwWwwWwwwwwWwwWwwwwWWWWWW
+wWWWwW 	                          <- Point 1
+wwwwWWWwWwwwwwwwWwWWWWWWWWw       <- Point 2
+wwwwwwwWWWwWWWWwWwWWWwWwwwwwwwWWw <- Point 3
+WWWWWWWWW                         <- Point 4
+WWwwwwwww                         <- Point 5
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+wWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWw
+Www
 `
 
 func TestEvaluator_Evaluate(t *testing.T) {
@@ -57,6 +65,12 @@ func TestEvaluator_Evaluate(t *testing.T) {
 			name:    "1 + 2 = 3",
 			input:   add,
 			wantOut: "3",
+			wantErr: false,
+		},
+		{
+			name:    "4 * 2 = 8",
+			input:   mul,
+			wantOut: "8",
 			wantErr: false,
 		},
 		{

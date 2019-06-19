@@ -19,8 +19,8 @@ const (
 	DECR  = "WWW"
 	NEXT  = "wWw"
 	PREV  = "WwW"
-	READ  = "wwWW"
-	WRITE = "WWww"
-	OPEN  = "wwWww"
-	CLOSE = "WWwWW"
+	READ  = "wwW"
+	WRITE = "Www"
+	OPEN  = "wWW"
+	CLOSE = "WWw"
 )
