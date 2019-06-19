@@ -11,4 +11,4 @@ WwwWwWWwWWwWWwWWwWWwWWwWWwWWwwwWWWwWWWwwww
 wWwwWwwWwwWwwWwwWwwWwwWw
 wWWWWWwWwwWwwWwwWwwwwWwWWWw
 WWWwWwWww
-wWWWwWWWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwWww¥
+wWWWwWWWwwWwwWwwWwwWwwWwwWwwWwwWwwWwwWwWww
