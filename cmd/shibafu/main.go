@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -44,7 +45,7 @@ func run(args []string) error {
 	}
 
 	if onelinerFlag != "" {
-		return evaluator.New(onelinerFlag).Evaluate()
+		return evaluator.New(onelinerFlag, os.Stdin, os.Stdout).Evaluate(context.Background())
 	}
 
 	if syntaxCheckFlag != "" {
@@ -61,7 +62,7 @@ func run(args []string) error {
 		return err
 	}
 
-	return evaluator.New(input).Evaluate()
+	return evaluator.New(input, os.Stdin, os.Stdout).Evaluate(context.Background())
 }
 
 func readFile(filePath string) (string, error) {
