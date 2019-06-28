@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"io"
-	"os"
 
 	"github.com/Code-Hex/shibafu/lexer"
 	"github.com/Code-Hex/shibafu/token"
@@ -23,11 +22,10 @@ const (
 	stackSize = 65535
 )
 
-var stdout io.Writer = os.Stdout
-
 type Evaluator struct {
 	lexer   lexer.Lexer
 	reader  *bufio.Reader
+	writer  io.Writer
 	program []*instruction
 }
 
@@ -36,10 +34,11 @@ type instruction struct {
 	pc       int
 }
 
-func New(input string) *Evaluator {
+func New(input string, r io.Reader, w io.Writer) *Evaluator {
 	return &Evaluator{
 		lexer:  lexer.New(input),
-		reader: bufio.NewReader(os.Stdin),
+		reader: bufio.NewReader(r),
+		writer: w,
 	}
 }
 
@@ -127,7 +126,7 @@ func (e *Evaluator) execute() error {
 		case decrval:
 			data[ptr]--
 		case write:
-			stdout.Write([]byte{data[ptr]})
+			e.writer.Write([]byte{data[ptr]})
 		case read:
 			rv, _ := e.reader.ReadByte()
 			data[ptr] = rv

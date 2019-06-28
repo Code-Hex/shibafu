@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"bytes"
+	"os"
 	"testing"
 )
 
@@ -46,9 +47,6 @@ Www
 `
 
 func TestEvaluator_Evaluate(t *testing.T) {
-	buf := &bytes.Buffer{}
-	stdout = buf // switching output dest
-
 	tests := []struct {
 		name    string
 		input   string
@@ -81,8 +79,8 @@ func TestEvaluator_Evaluate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer buf.Reset()
-			e := New(tt.input)
+			buf := &bytes.Buffer{}
+			e := New(tt.input, os.Stdin, buf)
 			if err := e.Evaluate(); (err != nil) != tt.wantErr {
 				t.Errorf("Evaluator.Evaluate() error = %v, wantErr %v", err, tt.wantErr)
 			}
