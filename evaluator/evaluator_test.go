@@ -2,8 +2,10 @@ package evaluator
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"testing"
+	"time"
 )
 
 const helloworld = `
@@ -76,12 +78,17 @@ func TestEvaluator_Evaluate(t *testing.T) {
 			input:   `w`,
 			wantErr: true,
 		},
+		{
+			name:    "Invalid stack overflow",
+			input:   infLoop,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := &bytes.Buffer{}
 			e := New(tt.input, os.Stdin, buf)
-			if err := e.Evaluate(); (err != nil) != tt.wantErr {
+			if err := e.Evaluate(context.Background()); (err != nil) != tt.wantErr {
 				t.Errorf("Evaluator.Evaluate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if !tt.wantErr {
@@ -90,5 +97,22 @@ func TestEvaluator_Evaluate(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+const infLoop = `wWwwWWwWWwwwwWwWWwwWwWWw`
+
+func TestTimeout(t *testing.T) {
+	buf := &bytes.Buffer{}
+	e := New(infLoop, os.Stdin, buf)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	err := e.Evaluate(ctx)
+	if err == nil {
+		t.Fatalf("Evaluator.Evaluate() error = %v, wantErr %v", nil, true)
+	}
+	if err != context.DeadlineExceeded {
+		t.Fatalf("Evaluator.Evaluate() error = %v, want %v", err, context.DeadlineExceeded)
 	}
 }

@@ -2,7 +2,9 @@ package evaluator
 
 import (
 	"bufio"
+	"context"
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/Code-Hex/shibafu/lexer"
@@ -19,7 +21,7 @@ const (
 	fwd
 	bck
 
-	stackSize = 65535
+	stackSize = 250000000
 )
 
 type Evaluator struct {
@@ -42,11 +44,11 @@ func New(input string, r io.Reader, w io.Writer) *Evaluator {
 	}
 }
 
-func (e *Evaluator) Evaluate() error {
+func (e *Evaluator) Evaluate(ctx context.Context) error {
 	if err := e.compile(); err != nil {
 		return err
 	}
-	return e.execute()
+	return e.execute(ctx)
 }
 
 func (e *Evaluator) compile() error {
@@ -105,41 +107,49 @@ LOOP:
 			})
 			e.program[jmpLabel].pc = pc
 		case token.ILLEGAL:
-			return errors.New("compile error")
+			return errors.New("compile illegal error")
 		}
 	}
 	return nil
 }
 
-func (e *Evaluator) execute() error {
+func (e *Evaluator) execute(ctx context.Context) error {
 	var ptr int
 	data := make([]byte, stackSize)
 	for pc := 0; pc < len(e.program); pc++ {
-		inst := e.program[pc]
-		switch inst.operator {
-		case incr:
-			ptr++
-		case decr:
-			ptr--
-		case incrval:
-			data[ptr]++
-		case decrval:
-			data[ptr]--
-		case write:
-			e.writer.Write([]byte{data[ptr]})
-		case read:
-			rv, _ := e.reader.ReadByte()
-			data[ptr] = rv
-		case fwd:
-			if data[ptr] == 0 {
-				pc = e.program[pc].pc
-			}
-		case bck:
-			if data[ptr] != 0 {
-				pc = e.program[pc].pc
-			}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		default:
-			return errors.New("runtime error")
+			if len(data) <= ptr {
+				return fmt.Errorf("stack exceeds %d-byte limit", stackSize)
+			}
+			inst := e.program[pc]
+			switch inst.operator {
+			case incr:
+				ptr++
+			case decr:
+				ptr--
+			case incrval:
+				data[ptr]++
+			case decrval:
+				data[ptr]--
+			case write:
+				e.writer.Write([]byte{data[ptr]})
+			case read:
+				rv, _ := e.reader.ReadByte()
+				data[ptr] = rv
+			case fwd:
+				if data[ptr] == 0 {
+					pc = e.program[pc].pc
+				}
+			case bck:
+				if data[ptr] != 0 {
+					pc = e.program[pc].pc
+				}
+			default:
+				return errors.New("runtime error")
+			}
 		}
 	}
 	return nil
