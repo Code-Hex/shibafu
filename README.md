@@ -27,5 +27,6 @@ The syntax of this language is based on [Brainfuck](https://en.wikipedia.org/wik
 
 ## See
 
+- Shibafu Playground - https://play.shibafu.dev/
 - [examples](https://github.com/Code-Hex/shibafu/tree/master/example).
 - [grass](http://blue.sky.or.jp/grass/doc_ja.html) language. It is awesome :D
