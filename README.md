@@ -25,4 +25,8 @@ The syntax of this language is based on [Brainfuck](https://en.wikipedia.org/wik
 |  `wWW`  | if the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next token, jump it forward to the token after the matching `WWw` token.                                                                                                                                                                                   |
 |  `WWw`  | if the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching `wWW` command.                                                                                                                                                                                 |
 
-See [examples](https://github.com/Code-Hex/shibafu/tree/master/example).
+## See
+
+- Shibafu Playground - https://play.shibafu.dev/
+- [examples](https://github.com/Code-Hex/shibafu/tree/master/example).
+- [grass](http://blue.sky.or.jp/grass/doc_ja.html) language. It is awesome :D
