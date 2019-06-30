@@ -97,7 +97,7 @@ LOOP:
 			jmpStack = append(jmpStack, pc)
 		case token.CLOSE:
 			if len(jmpStack) == 0 {
-				return runtimeError(t, "undefined `wWW`")
+				return compileError(t, "undefined `wWW`")
 			}
 			jmpLabel := jmpStack[len(jmpStack)-1]
 			jmpStack = jmpStack[:len(jmpStack)-1]
@@ -107,7 +107,7 @@ LOOP:
 			})
 			e.program[jmpLabel].pc = pc
 		case token.ILLEGAL:
-			return runtimeError(t, "compile illegal token")
+			return compileError(t, "compile illegal token")
 		}
 	}
 	return nil
@@ -155,6 +155,6 @@ func (e *Evaluator) execute(ctx context.Context) error {
 	return nil
 }
 
-func runtimeError(t *token.Token, msg string) error {
-	return fmt.Errorf("runtime:%d:%d: %s", t.Line, t.Col, msg)
+func compileError(t *token.Token, msg string) error {
+	return fmt.Errorf("compile:%d:%d: %s", t.Line, t.Col, msg)
 }
