@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/Code-Hex/shibafu/evaluator"
 	"github.com/Code-Hex/shibafu/lexer"
@@ -17,6 +18,7 @@ var version string
 var (
 	onelinerFlag    string
 	syntaxCheckFlag string
+	translateFlag   string
 	versionFlag     bool
 	helpFlag        bool
 )
@@ -24,6 +26,7 @@ var (
 func main() {
 	flag.StringVar(&onelinerFlag, "e", "", "one line of program")
 	flag.StringVar(&syntaxCheckFlag, "c", "", "check syntax only")
+	flag.StringVar(&translateFlag, "t", "", "translate brainfuck to shibafu")
 	flag.BoolVar(&versionFlag, "v", false, "print version number")
 	flag.BoolVar(&helpFlag, "h", false, "print help message")
 	flag.Parse()
@@ -46,6 +49,11 @@ func run(args []string) error {
 
 	if onelinerFlag != "" {
 		return evaluator.New(onelinerFlag, os.Stdin, os.Stdout).Evaluate(context.Background())
+	}
+
+	if translateFlag != "" {
+		translateBrainfuck(translateFlag)
+		return nil
 	}
 
 	if syntaxCheckFlag != "" {
@@ -88,4 +96,20 @@ LOOP:
 		os.Exit(1)
 	}
 	fmt.Println("Syntax OK!")
+}
+
+var replacer = strings.NewReplacer(
+	">", "www",
+	"<", "WWW",
+	"+", "wWw",
+	"-", "WwW",
+	".", "Www",
+	",", "wwW",
+	"[", "wWW",
+	"]", "WWw",
+)
+
+func translateBrainfuck(bf string) {
+	shibafu := replacer.Replace(bf)
+	fmt.Println(shibafu)
 }
