@@ -4,7 +4,7 @@ builds:
     binary: shibafu
     env:
       - CGO_ENABLED=0
-    ldflags: -s -w
+    ldflags: -s -w -X main.version={{.Version}}
     goos:
       - linux
       - darwin
